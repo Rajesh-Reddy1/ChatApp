@@ -1,54 +1,42 @@
 /**
  * v0 by Vercel.
- * @see https://v0.dev/t/RKlGqt2tHmX
+ * @see https://v0.dev/t/egZxQ8evD0y
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-'use client'
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import  ProfileOptions  from "@/components/Profile"
-import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+
+import { useHistory } from 'react-router-dom';
+
 
 export default function Component() {
-  let router = useRouter();
+  const history = useHistory();
+
+  const handleButtonClick = () => {
+    history.push('/app/newchat/page');
+  };
   return (
-
-        <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
-          <div className="flex items-center">
-            <h1 className="font-semibold text-lg md:text-2xl">John Doe</h1>
+    
+    <div className="w-full h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+      <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-md rounded-lg dark:bg-gray-800">
+        <h2 className="text-3xl font-bold text-center dark:text-gray-100">Login</h2>
+        <div className="space-y-4">
+          <div className="relative">
+            <PersonStandingIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500 dark:text-gray-400" />
+            <Input className="pl-10" id="username" placeholder="Username" required type="text" />
           </div>
-          <div className="border shadow-sm rounded-lg">
-            <div className="flex flex-col gap-4 p-4">
-              <div className="flex items-start gap-4">
-                <UserIcon className="h-6 w-6" />
-                <div className="grid gap-1">
-                  <p className="text-sm font-medium leading-none">You</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Hi John, how are you?</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4 ml-auto">
-                <div className="grid gap-1">
-                  <p className="text-sm font-medium leading-none">John Doe</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Hi, I'm good. How about you?</p>
-                </div>
-                <UserIcon className="h-6 w-6" />
-              </div>
-            </div>
+          <div className="relative">
+            <MailboxIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500 dark:text-gray-400" />
+            <Input className="pl-10" id="email" placeholder="Email" required type="email" />
           </div>
-          <div className="mt-auto flex items-center gap-4 w-full">
-            <Input
-              className="w-full bg-white shadow-none appearance-none pl-2 dark:bg-gray-950"
-              placeholder="Type a message..."
-              type="text"
-            />
-            <Button>Send</Button>
-          </div>
-        </main>
-
+        </div>
+        <Button className="w-full" onClick={handleButtonClick} >Login</Button>
+      </div>
+    </div>
   )
 }
 
-function PlusIcon(props) {
+function MailboxIcon(props) {
   return (
     <svg
       {...props}
@@ -62,14 +50,16 @@ function PlusIcon(props) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <path d="M5 12h14" />
-      <path d="M12 5v14" />
+      <path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H18c2.2 0 4 1.8 4 4v8Z" />
+      <polyline points="15,9 18,9 18,11" />
+      <path d="M6.5 5C9 5 11 7 11 9.5V17a2 2 0 0 1-2 2v0" />
+      <line x1="6" x2="7" y1="10" y2="10" />
     </svg>
   )
 }
 
 
-function SearchIcon(props) {
+function PersonStandingIcon(props) {
   return (
     <svg
       {...props}
@@ -83,50 +73,10 @@ function SearchIcon(props) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.3-4.3" />
+      <circle cx="12" cy="5" r="1" />
+      <path d="m9 20 3-6 3 6" />
+      <path d="m6 8 6 2 6-2" />
+      <path d="M12 10v4" />
     </svg>
   )
 }
-
-
-function SettingsIcon() {
-  return (
-    <svg
-
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  )
-}
-
-
-function UserIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  )
-}
-
