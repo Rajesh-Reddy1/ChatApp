@@ -1,6 +1,6 @@
 'use client'
-// import { Input } from "@/components/ui/input"
-// import { Button } from "@/components/ui/button"
+import { Input  } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 // import Link from "next/link"
 
 
@@ -73,26 +73,7 @@
 // }
 
 
-import React, { useState } from 'react';
-
-import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, set } from 'firebase/database';
-
-
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBbC2K7VyH059BoDoqmbaC0xSdwKJ6lOa8",
-  authDomain: "chatapp-bde1a.firebaseapp.com",
-  databaseURL: "https://chatapp-bde1a-default-rtdb.firebaseio.com",
-  projectId: "chatapp-bde1a",
-  storageBucket: "chatapp-bde1a.appspot.com",
-  messagingSenderId: "665919633249",
-  appId: "1:665919633249:web:bc853edb624519b0827720"
-};
-initializeApp(firebaseConfig);
-export const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-export const database = getDatabase(app);
+import React, { useEffect, useState } from 'react';
 
 // Function to create a user with friends data
 
@@ -101,6 +82,7 @@ export const database = getDatabase(app);
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
+import { app } from "@/lib/data";
 
 // function Signup() {
 //   const [email, setEmail] = useState('');
@@ -123,21 +105,21 @@ import { useRouter } from 'next/navigation';
 
 //   return (
 //     <form onSubmit={handleSignup}>
-//       <input
+//       <Input
 //         type="email"
 //         value={email}
 //         onChange={(e) => setEmail(e.target.value)}
 //         required
 //         placeholder="Email"
 //         />
-//       <input
+//       <Input
 //         type="password"
 //         value={password}
 //         onChange={(e) => setPassword(e.target.value)}
 //         required
 //         placeholder="Password"
 //       />
-//       <button type="submit">Sign Up</button>
+//       <Button type="submit">Sign Up</Button>
 //     </form>
 //   );
 // }
@@ -172,21 +154,21 @@ import { useRouter } from 'next/navigation';
   
 //   return (
 //     <form onSubmit={handleLogin}>
-//       <input
+//       <Input
 //         type="email"
 //         value={email}
 //         onChange={(e) => setEmail(e.target.value)}
 //         required
 //         placeholder="Email"
 //       />
-//       <input
+//       <Input
 //         type="password"
 //         value={password}
 //         onChange={(e) => setPassword(e.target.value)}
 //         required
 //         placeholder="Password"
 //       />
-//       <button type="submit"  >Login</button>
+//       <Button type="submit"  >Login</Button>
 //       {loginError && <p style={{ color: 'red' }}>{loginError}</p>}
 //     </form>
 //   );
@@ -201,10 +183,17 @@ function AuthPage() {
   const [loginError, setLoginError] = useState(null);
   const [signupError, setSignupError] = useState(null);
   const router = useRouter();
+  const auth = getAuth(app);
+
+  useEffect(()=>{
+    if(auth.currentUser?.uid !== null){
+      router.push('/profile');
+    }
+  },[])
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const auth = getAuth();
+    
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       console.log('User signed up successfully!');
@@ -217,7 +206,6 @@ function AuthPage() {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const auth = getAuth();
     try {
       await signInWithEmailAndPassword(auth, email, password);
       console.log('User logged in successfully!');
@@ -235,42 +223,42 @@ function AuthPage() {
       {/* Signup Form */}
       <form onSubmit={handleSignup}>
         <h2>Signup</h2>
-        <input
+        <Input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
           placeholder="Email"
         />
-        <input
+        <Input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
           placeholder="Password"
         />
-        <button type="submit">Signup</button>
+        <Button type="submit">Signup</Button>
         {signupError && <p style={{ color: 'red' }}>{signupError}</p>}
       </form>
 
       {/* Login Form */}
       <form onSubmit={handleLogin}>
         <h2>Login</h2>
-        <input
+        <Input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
           placeholder="Email"
         />
-        <input
+        <Input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
           placeholder="Password"
         />
-        <button type="submit">Login</button>
+        <Button type="submit">Login</Button>
         {loginError && <p style={{ color: 'red' }}>{loginError}</p>}
       </form>
     </div>

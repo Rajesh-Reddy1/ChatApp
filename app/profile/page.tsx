@@ -9,7 +9,6 @@ interface ProviderProps {
     children: ReactNode;
 }
 import { useState, useEffect } from 'react';
-import { database } from "../page";
 import { getDatabase, ref, child, get } from 'firebase/database';
 
 interface FriendsListProps {

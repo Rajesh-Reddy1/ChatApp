@@ -40,7 +40,7 @@ export default function Component() {
             <Button 
             onClick={()=>{
                 const db = getDatabase(app);
-                let msg_id = "123456"
+                let msg_id = "1234567"
                 const senderMsgRef = ref(db, `users/${sender}/msgs/${msg_id}`);
                 const msg: msg = {sender: sender,receiver:receiver, content: content,timestamp: Date.now()};
                 set(senderMsgRef,msg);
