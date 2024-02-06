@@ -92,7 +92,7 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 export const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const database = getDatabase(app);
+export const database = getDatabase(app);
 
 // Function to create a user with friends data
 
@@ -200,6 +200,7 @@ function AuthPage() {
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(null);
   const [signupError, setSignupError] = useState(null);
+  const router = useRouter();
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -220,7 +221,7 @@ function AuthPage() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       console.log('User logged in successfully!');
-      window.location.href = '/profile';
+      router.push('/newchat');
     } catch (error: any) {
       const errorMessage = error.message;
       console.error('Login error:', errorMessage);

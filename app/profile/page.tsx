@@ -1,86 +1,275 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/I0TQ08myFX2
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
 'use client'
+import { DropdownMenuTrigger, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuContent, DropdownMenu, DropdownMenuLabel } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
-import { Provider } from "../newchat/provider"
+import React, { ReactNode } from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import LeftMenu from "@/components/leftmenu";
+interface ProviderProps {
+    children: ReactNode;
+}
+import { useState, useEffect } from 'react';
+import { database } from "../page";
+import { getDatabase, ref, child, get } from 'firebase/database';
 
-import { app } from "../page";
-import { getDatabase, ref, push, set } from 'firebase/database';
-
-// Function to create a user in the Firebase Realtime Database
-const createUser = async (userId: String, email: String) => {
-    const db = getDatabase(app);
-    const userRef = ref(db, `users/${userId}`);
-
-    try {
-        await set(userRef, {
-            email: email,
-            friends: {}, // Initially, the user has no friends
-            messages: [] // Initially, the user has no messages
-        });
-        console.log('User created successfully!');
-    } catch (error) {
-        console.error('Error creating user:', error);
-    }
-};
-
-// Function to add a friend to a user
-const addFriend = async (userId: String, friendId: String) => {
-    const db = getDatabase();
-    const userFriendsRef = ref(db, `users/${userId}/friends/${friendId}`);
-
-    try {
-        await set(userFriendsRef, true); // You can set any value to represent friendship
-        console.log('Friend added successfully!');
-    } catch (error) {
-        console.error('Error adding friend:', error);
-    }
-};
-interface Message {
-    text: string;
-    sender: string;
+interface FriendsListProps {
+    userId: string;
+    onFriendClick: (friendId: string) => void;
 }
 
 
-const addMessage = async (userId: string, message: Message) => {
-    const db = getDatabase();
-    const userMessagesRef = ref(db, `users/${userId}/messages`);
+interface FriendsListProps {
+    userId: string;
+    onFriendClick: (friendId: string) => void;
+}
 
-    try {
-        // Push a new message object to the messages list
-        const newMessageRef = push(userMessagesRef);
-        const timestamp = Date.now();
+function FriendsList({ userId, onFriendClick }: FriendsListProps) {
+    const [friends, setFriends] = useState<string[]>([]);
 
-        // Set the message details including timestamp and sender
-        await set(newMessageRef, {
-            text: message.text,
-            sender: message.sender,
-            timestamp: timestamp
-        });
+    useEffect(() => {
+        const fetchFriends = async () => {
+            try {
+                const db = getDatabase();
+                const userFriendsRef = ref(db, `users/${userId}/friends`);
+                const snapshot = await get(userFriendsRef);
+                if (snapshot.exists()) {
+                    const friendsData: { [key: string]: unknown } = snapshot.val();
+                    const friendsList = Object.keys(friendsData);
+                    setFriends(friendsList as string[]); // Type assertion
+                }
+            } catch (error) {
+                console.error('Error fetching friends:', error);
+            }
+        };
 
-        console.log('Message added successfully!');
-    } catch (error) {
-        console.error('Error adding message:', error);
-    }
-};
-
-// Usage example:
-addMessage('userId1', { text: 'Hello friend!', sender: 'userId1' });
-
-// Usage example:
-createUser('userId1', 'user1@example.com');
-addFriend('userId1', 'friendId1');
-addMessage('userId1', { text: 'Hello friend!', sender: 'userId1'});
-
-export default function ProfileOptions() {
+        fetchFriends();
+    }, [userId]);
 
     return (
-        <Provider>
-
-<p></p>
-        </Provider>
-    )
+        <div>
+            <h2>Friends List</h2>
+            <ul>
+                {friends.map((friendId) => (
+                    <li key={friendId} onClick={() => onFriendClick(friendId)}>
+                        {friendId}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
 }
+
+function Messages({ userId, friendId }: { userId: string; friendId: string }) {
+    const [messages, setMessages] = useState<string[]>([]);
+
+    useEffect(() => {
+        const fetchMessages = async () => {
+            try {
+                const db = getDatabase();
+                const messagesRef = ref(db, `messages/${userId}-${friendId}`);
+                const snapshot = await get(messagesRef);
+                if (snapshot.exists()) {
+                    const messagesData: unknown[] = Object.values(snapshot.val());
+                    setMessages(messagesData.map((message: unknown) => message as string)); // Type assertion
+                }
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+            }
+        };
+
+        fetchMessages();
+    }, [userId, friendId]);
+
+    return (
+        <div>
+            <h2>Messages with {friendId}</h2>
+            <ul>
+                {messages.map((message, index) => (
+                    <li key={index}>{message}</li>
+                ))}
+            </ul>
+        </div>
+    );
+}
+
+function App() {
+    const [selectedFriend, setSelectedFriend] = useState<string | null>(null);
+    const userId = 'userId1'; // Assume user is logged in
+
+    const handleFriendClick = (friendId: string) => {
+        setSelectedFriend(friendId);
+    };
+
+    return (
+        <div>
+            <h1>Chat App</h1>
+            <FriendsList userId={userId} onFriendClick={handleFriendClick} />
+            {selectedFriend && (
+                <Messages userId={userId} friendId={selectedFriend} />
+            )}
+        </div>
+    );
+}
+
+export default App;
+
+
+
+
+// export function Provider({ children }: ProviderProps) {
+//     return (
+//         <div key="1" className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
+//             <div className="hidden border-r bg-gray-100/40 lg:block dark:bg-gray-800/40">
+//                 <div className="flex h-full max-h-screen flex-col gap-2">
+//                     <div className="flex h-[60px] items-center border-b px-6">
+//                         <Link className="flex items-center gap-2 font-semibold" href="#">
+//                             <UserIcon className="h-6 w-6" />
+//                             <span className="">My Profile</span>
+//                         </Link>
+//                         <Button className="ml-auto h-8 w-8" size="icon" variant="outline">
+//                             <SettingsIcon className="h-4 w-4" />
+//                             <span className="sr-only">Settings</span>
+//                         </Button>
+//                     </div>
+//                     <LeftMenu />
+//                 </div>
+//             </div>
+//             <div className="flex flex-col">
+//                 <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
+//                     <Link className="lg:hidden" href="#">
+//                         <UserIcon className="h-6 w-6" />
+//                         <span className="sr-only">Home</span>
+//                     </Link>
+//                     <div className="w-full flex-1">
+//                         <form>
+//                             <div className="relative">
+//                                 <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+//                                 <Input
+//                                     className="w-full bg-white shadow-none appearance-none pl-8 md:w-2/3 lg:w-1/3 dark:bg-gray-950"
+//                                     placeholder="Search messages..."
+//                                     type="search"
+//                                 />
+//                             </div>
+//                         </form>
+//                     </div>
+//                     <DropdownMenu>
+//                         <DropdownMenuTrigger asChild>
+//                             <Button
+//                                 className="rounded-full border border-gray-200 w-8 h-8 dark:border-gray-800"
+//                                 size="icon"
+//                                 variant="ghost"
+//                             >
+//                                 <img
+//                                     alt="Avatar"
+//                                     className="rounded-full"
+//                                     height="32"
+//                                     src="/placeholder.svg"
+//                                     style={{
+//                                         aspectRatio: "32/32",
+//                                         objectFit: "cover",
+//                                     }}
+//                                     width="32"
+//                                 />
+//                                 <span className="sr-only">Toggle user menu</span>
+//                             </Button>
+//                         </DropdownMenuTrigger>
+//                         <DropdownMenuContent align="end">
+//                             <DropdownMenuLabel>My Account</DropdownMenuLabel>
+//                             <DropdownMenuSeparator />
+//                             <DropdownMenuItem>Settings</DropdownMenuItem>
+//                             <DropdownMenuItem>Support</DropdownMenuItem>
+//                             <DropdownMenuSeparator />
+//                             <DropdownMenuItem>Logout</DropdownMenuItem>
+//                         </DropdownMenuContent>
+//                     </DropdownMenu>
+//                 </header>
+//                 {children}
+//             </div>
+//         </div>
+//     )
+// }
+
+
+
+// function PlusIcon(props: any) {
+//     return (
+//         <svg
+//             {...props}
+//             xmlns="http://www.w3.org/2000/svg"
+//             width="24"
+//             height="24"
+//             viewBox="0 0 24 24"
+//             fill="none"
+//             stroke="currentColor"
+//             strokeWidth="2"
+//             strokeLinecap="round"
+//             strokeLinejoin="round"
+//         >
+//             <path d="M5 12h14" />
+//             <path d="M12 5v14" />
+//         </svg>
+//     )
+// }
+
+
+// function SearchIcon(props: any) {
+//     return (
+//         <svg
+//             {...props}
+//             xmlns="http://www.w3.org/2000/svg"
+//             width="24"
+//             height="24"
+//             viewBox="0 0 24 24"
+//             fill="none"
+//             stroke="currentColor"
+//             strokeWidth="2"
+//             strokeLinecap="round"
+//             strokeLinejoin="round"
+//         >
+//             <circle cx="11" cy="11" r="8" />
+//             <path d="m21 21-4.3-4.3" />
+//         </svg>
+//     )
+// }
+
+
+// function SettingsIcon(props: any) {
+//     return (
+//         <svg
+//             {...props}
+//             xmlns="http://www.w3.org/2000/svg"
+//             width="24"
+//             height="24"
+//             viewBox="0 0 24 24"
+//             fill="none"
+//             stroke="currentColor"
+//             strokeWidth="2"
+//             strokeLinecap="round"
+//             strokeLinejoin="round"
+//         >
+//             <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+//             <circle cx="12" cy="12" r="3" />
+//         </svg>
+//     )
+// }
+
+
+// export function UserIcon(props: any) {
+//     return (
+//         <svg
+//             {...props}
+//             xmlns="http://www.w3.org/2000/svg"
+//             width="24"
+//             height="24"
+//             viewBox="0 0 24 24"
+//             fill="none"
+//             stroke="currentColor"
+//             strokeWidth="2"
+//             strokeLinecap="round"
+//             strokeLinejoin="round"
+//         >
+//             <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+//             <circle cx="12" cy="7" r="4" />
+//         </svg>
+//     )
+// }
