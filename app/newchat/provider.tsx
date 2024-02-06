@@ -1,11 +1,15 @@
 
 import { DropdownMenuTrigger, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuContent, DropdownMenu, DropdownMenuLabel } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
+import React, { ReactNode } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import LeftMenu from "@/components/leftmenu";
+interface ProviderProps {
+    children: ReactNode;
+}
 
-export function Provider({ children }) {
+export function Provider({ children}:ProviderProps) {
     return (
         <div key="1" className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
             <div className="hidden border-r bg-gray-100/40 lg:block dark:bg-gray-800/40">
@@ -80,7 +84,7 @@ export function Provider({ children }) {
 
 
 
-function PlusIcon(props) {
+function PlusIcon(props:any) {
     return (
         <svg
             {...props}
@@ -101,7 +105,7 @@ function PlusIcon(props) {
 }
 
 
-function SearchIcon(props) {
+function SearchIcon(props:any) {
     return (
         <svg
             {...props}
@@ -122,7 +126,7 @@ function SearchIcon(props) {
 }
 
 
-function SettingsIcon(props) {
+function SettingsIcon(props:any) {
     return (
         <svg
             {...props}
@@ -143,7 +147,7 @@ function SettingsIcon(props) {
 }
 
 
-export function UserIcon(props) {
+export function UserIcon(props:any) {
     return (
         <svg
             {...props}

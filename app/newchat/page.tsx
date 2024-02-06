@@ -27,7 +27,7 @@ export default function Component() {
     )
 }
 
-function PlusIcon(props) {
+function PlusIcon(props:any) {
     return (
         <svg
             {...props}
@@ -48,7 +48,7 @@ function PlusIcon(props) {
 }
 
 
-function SearchIcon(props) {
+function SearchIcon(props: any) {
     return (
         <svg
             {...props}

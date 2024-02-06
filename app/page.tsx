@@ -2,7 +2,7 @@
 // import { Input } from "@/components/ui/input"
 // import { Button } from "@/components/ui/button"
 // import Link from "next/link"
-import Router from 'next/router';
+
 
 
 // export default function Component() {
@@ -90,7 +90,7 @@ const firebaseConfig = {
   appId: "1:665919633249:web:bc853edb624519b0827720"
 };
 initializeApp(firebaseConfig);
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const database = getDatabase(app);
 
@@ -201,13 +201,13 @@ function AuthPage() {
   const [loginError, setLoginError] = useState(null);
   const [signupError, setSignupError] = useState(null);
 
-  const handleSignup = async (e) => {
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const auth = getAuth();
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       console.log('User signed up successfully!');
-    } catch (error) {
+    } catch (error : any) {
       const errorMessage = error.message;
       console.error('Signup error:', errorMessage);
       setSignupError(errorMessage);
@@ -221,7 +221,7 @@ function AuthPage() {
       await signInWithEmailAndPassword(auth, email, password);
       console.log('User logged in successfully!');
       window.location.href = '/profile';
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = error.message;
       console.error('Login error:', errorMessage);
       setLoginError(errorMessage);

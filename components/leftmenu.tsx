@@ -5,35 +5,35 @@ import React, { useContext, useEffect, useState } from 'react';
 
 export default function LeftMenu() {
 
-    // const users = [
-    //     { uid: '1', name: 'John Doe' },
-    //     { uid: '2', name: 'Jane Smith' },
-    //     { uid: '3', name: 'Bob Johnson' }
+    const users = [
+        { uid: '1', name: 'John Doe' },
+        { uid: '2', name: 'Jane Smith' },
+        { uid: '3', name: 'Bob Johnson' }
 
-    // ];
+    ];
 
-    // return (
-    //     <div className="flex-1 overflow-auto py-2">
-    //         <nav className="grid items-start px-4 text-sm font-medium">
-    //             {users.map(user => (
-    //                 <Link
-    //                     key={user.uid}
-    //                     className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-    //                     href={`/chat/${user.uid}`} 
-    //                 >
-    //                     <UserIcon className="h-4 w-4" />
-    //                     {user.name}
-    //                 </Link>
-    //             ))}
-    //         </nav>
-    //     </div>
-    // );
+    return (
+        <div className="flex-1 overflow-auto py-2">
+            <nav className="grid items-start px-4 text-sm font-medium">
+                {users.map(user => (
+                    <Link
+                        key={user.uid}
+                        className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+                        href={`/chat/${user.uid}`} 
+                    >
+                        <UserIcon className="h-4 w-4" />
+                        {user.name}
+                    </Link>
+                ))}
+            </nav>
+        </div>
+    );
 
 
 
 }
 
-function PlusIcon(props) {
+function PlusIcon(props:any) {
     return (
         <svg
             {...props}
@@ -54,7 +54,7 @@ function PlusIcon(props) {
 }
 
 
-function SearchIcon(props) {
+function SearchIcon(props:any) {
     return (
         <svg
             {...props}
@@ -75,7 +75,7 @@ function SearchIcon(props) {
 }
 
 
-function SettingsIcon(props) {
+function SettingsIcon(props:any) {
     return (
         <svg
             {...props}
@@ -96,7 +96,7 @@ function SettingsIcon(props) {
 }
 
 
-function UserIcon(props) {
+function UserIcon(props:any) {
     return (
         <svg
             {...props}

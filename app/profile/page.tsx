@@ -6,31 +6,81 @@
 'use client'
 import Link from "next/link"
 import { Provider } from "../newchat/provider"
+
+import { app } from "../page";
+import { getDatabase, ref, push, set } from 'firebase/database';
+
+// Function to create a user in the Firebase Realtime Database
+const createUser = async (userId: String, email: String) => {
+    const db = getDatabase(app);
+    const userRef = ref(db, `users/${userId}`);
+
+    try {
+        await set(userRef, {
+            email: email,
+            friends: {}, // Initially, the user has no friends
+            messages: [] // Initially, the user has no messages
+        });
+        console.log('User created successfully!');
+    } catch (error) {
+        console.error('Error creating user:', error);
+    }
+};
+
+// Function to add a friend to a user
+const addFriend = async (userId: String, friendId: String) => {
+    const db = getDatabase();
+    const userFriendsRef = ref(db, `users/${userId}/friends/${friendId}`);
+
+    try {
+        await set(userFriendsRef, true); // You can set any value to represent friendship
+        console.log('Friend added successfully!');
+    } catch (error) {
+        console.error('Error adding friend:', error);
+    }
+};
+interface Message {
+    text: string;
+    sender: string;
+}
+
+
+const addMessage = async (userId: string, message: Message) => {
+    const db = getDatabase();
+    const userMessagesRef = ref(db, `users/${userId}/messages`);
+
+    try {
+        // Push a new message object to the messages list
+        const newMessageRef = push(userMessagesRef);
+        const timestamp = Date.now();
+
+        // Set the message details including timestamp and sender
+        await set(newMessageRef, {
+            text: message.text,
+            sender: message.sender,
+            timestamp: timestamp
+        });
+
+        console.log('Message added successfully!');
+    } catch (error) {
+        console.error('Error adding message:', error);
+    }
+};
+
+// Usage example:
+addMessage('userId1', { text: 'Hello friend!', sender: 'userId1' });
+
+// Usage example:
+createUser('userId1', 'user1@example.com');
+addFriend('userId1', 'friendId1');
+addMessage('userId1', { text: 'Hello friend!', sender: 'userId1'});
+
 export default function ProfileOptions() {
 
     return (
         <Provider>
 
-        
-<div className="flex flex-col gap-4">
-
-            <Link className="p-4 bg-gray-100 rounded-lg dark:bg-gray-800" href="#">
-                <div className="font-semibold">Change Name</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Update your display name</div>
-            </Link>
-            <Link className="p-4 bg-gray-100 rounded-lg dark:bg-gray-800" href="#">
-                <div className="font-semibold">Change Picture</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Update your profile picture</div>
-            </Link>
-            <Link className="p-4 bg-gray-100 rounded-lg dark:bg-gray-800" href="#">
-                <div className="font-semibold">Change Bio</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Update your bio information</div>
-            </Link>
-            <Link className="p-4 bg-gray-100 rounded-lg dark:bg-gray-800" href="#">
-                <div className="font-semibold">Sign Out</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Sign out from your account</div>
-            </Link>
-        </div>
+<p></p>
         </Provider>
     )
 }
