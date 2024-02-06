@@ -1,47 +1,6 @@
 'use client'
 import Link from "next/link";
 import React, { useContext, useEffect, useState } from 'react';
-import { AuthContext } from './firebase'; // Assuming AuthContext is your Firebase context
-import { database } from './page'; // Adjust the import as needed
-
-function Profile() {
-    const { currentUser } = useContext(AuthContext);
-    const [friendsData, setFriendsData] = useState({});
-
-    useEffect(() => {
-        const fetchFriendsData = async () => {
-            if (currentUser) {
-                const userId = currentUser.uid;
-                const userRef = database.ref(`users/${userId}/friends`);
-
-                try {
-                    const friendsSnapshot = await userRef.once('value');
-                    const friendsData = friendsSnapshot.val();
-                    setFriendsData(friendsData || {});
-                } catch (error) {
-                    console.error('Error fetching friends data:', error.message);
-                }
-            }
-        };
-
-        fetchFriendsData();
-    }, [currentUser]);
-
-    return (
-        <div>
-            <h2>Profile</h2>
-            <h3>Friends List</h3>
-            <ul>
-                {Object.entries(friendsData).map(([friendId, isFriend]) => (
-                    <li key={friendId}>{`Friend ID: ${friendId}, Is Friend: ${isFriend}`}</li>
-                ))}
-            </ul>
-        </div>
-    );
-}
-
-export default Profile;
-
 
 
 export default function LeftMenu() {

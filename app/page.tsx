@@ -95,123 +95,185 @@ const auth = getAuth(app);
 const database = getDatabase(app);
 
 // Function to create a user with friends data
-const createUserWithFriendsData = async (email, password) => {
-  try {
-    // Create user with email and password
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const userId = userCredential.user.uid;
 
-    // Set friends data for the user
-    const friendsData = {
-      friendId1: true,
-      friendId2: true,
-      // Add more friends as needed
-    };
-
-    // Set the user's data in the database
-    const userRef = ref(database, `users/${userId}`);
-    await set(userRef, {
-      email: email,
-      friends: friendsData
-    });
-
-    console.log('User created successfully with friends data!');
-  } catch (error) {
-    console.error('Error creating user:', error.message);
-  }
-};
 
 
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 
-function Signup() {
+// function Signup() {
+//   const [email, setEmail] = useState('');
+//   const [password, setPassword] = useState('');
+  
+//   const handleSignup = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     const auth = getAuth();
+//     try {
+//       await createUserWithEmailAndPassword(auth, email, password);
+//       console.log("Account created for user!");
+      
+//     } catch (error) {
+//       // Handle Errors here.
+//       const errorCode = error.code;
+//       const errorMessage = error.message;
+//       console.log(`Error: ${errorCode} ${errorMessage}`);
+//     }
+//   };
+
+//   return (
+//     <form onSubmit={handleSignup}>
+//       <input
+//         type="email"
+//         value={email}
+//         onChange={(e) => setEmail(e.target.value)}
+//         required
+//         placeholder="Email"
+//         />
+//       <input
+//         type="password"
+//         value={password}
+//         onChange={(e) => setPassword(e.target.value)}
+//         required
+//         placeholder="Password"
+//       />
+//       <button type="submit">Sign Up</button>
+//     </form>
+//   );
+// }
+
+
+
+
+// function Login() {
+//   const [email, setEmail] = useState('');
+//   const [password, setPassword] = useState('');
+//   const [loginError, setLoginError] = useState<string | null>(null);
+//   const router = useRouter();
+
+  
+//   const handleLogin = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     const auth = getAuth();
+
+//     try {
+
+//       const credentials = await signInWithEmailAndPassword(auth, email, password);
+//       console.log('User logged in successfully!', credentials);
+//       window.location.href = '/profile';
+//       // Redirect to profile/page upon successful login
+//     } catch (error: any) {
+//       const errorCode = error.code as string;
+//       const errorMessage = error.message as string;
+//       console.log(`Error: ${errorCode} ${errorMessage}`);
+//       setLoginError(errorMessage);
+//     }
+//   };
+  
+//   return (
+//     <form onSubmit={handleLogin}>
+//       <input
+//         type="email"
+//         value={email}
+//         onChange={(e) => setEmail(e.target.value)}
+//         required
+//         placeholder="Email"
+//       />
+//       <input
+//         type="password"
+//         value={password}
+//         onChange={(e) => setPassword(e.target.value)}
+//         required
+//         placeholder="Password"
+//       />
+//       <button type="submit"  >Login</button>
+//       {loginError && <p style={{ color: 'red' }}>{loginError}</p>}
+//     </form>
+//   );
+// }
+
+// export default Login;
+
+
+function AuthPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
-  const handleSignup = async (e: React.FormEvent) => {
+  const [loginError, setLoginError] = useState(null);
+  const [signupError, setSignupError] = useState(null);
+
+  const handleSignup = async (e) => {
     e.preventDefault();
     const auth = getAuth();
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      console.log("Account created for user!");
-      
+      console.log('User signed up successfully!');
     } catch (error) {
-      // Handle Errors here.
-      const errorCode = error.code;
       const errorMessage = error.message;
-      console.log(`Error: ${errorCode} ${errorMessage}`);
+      console.error('Signup error:', errorMessage);
+      setSignupError(errorMessage);
     }
   };
 
-  return (
-    <form onSubmit={handleSignup}>
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        placeholder="Email"
-        />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        placeholder="Password"
-      />
-      <button type="submit">Sign Up</button>
-    </form>
-  );
-}
-
-
-
-
-function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loginError, setLoginError] = useState<string | null>(null);
-  const router = useRouter();
-  
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const auth = getAuth();
-
     try {
-      const credentials = await signInWithEmailAndPassword(auth, email, password);
-      console.log('User logged in successfully!', credentials);
-
-      // Redirect to profile/page upon successful login
-    } catch (error: any) {
-      const errorCode = error.code as string;
-      const errorMessage = error.message as string;
-      console.log(`Error: ${errorCode} ${errorMessage}`);
+      await signInWithEmailAndPassword(auth, email, password);
+      console.log('User logged in successfully!');
+      window.location.href = '/profile';
+    } catch (error) {
+      const errorMessage = error.message;
+      console.error('Login error:', errorMessage);
       setLoginError(errorMessage);
     }
   };
 
   return (
-    <form onSubmit={handleLogin}>
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        placeholder="Email"
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        placeholder="Password"
-      />
-      <button type="submit"  onClick={()=>{router.push('/profile')}}>Login</button>
-      {loginError && <p style={{ color: 'red' }}>{loginError}</p>}
-    </form>
+    <div>
+      <h1>Authentication Page</h1>
+      {/* Signup Form */}
+      <form onSubmit={handleSignup}>
+        <h2>Signup</h2>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          placeholder="Email"
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          placeholder="Password"
+        />
+        <button type="submit">Signup</button>
+        {signupError && <p style={{ color: 'red' }}>{signupError}</p>}
+      </form>
+
+      {/* Login Form */}
+      <form onSubmit={handleLogin}>
+        <h2>Login</h2>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          placeholder="Email"
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          placeholder="Password"
+        />
+        <button type="submit">Login</button>
+        {loginError && <p style={{ color: 'red' }}>{loginError}</p>}
+      </form>
+    </div>
   );
 }
 
-export default Login;
+export default AuthPage;
