@@ -1,8 +1,4 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/RKlGqt2tHmX
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
+
 'use client'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,11 +6,13 @@ import { getDatabase, ref, set } from "firebase/database"
 import { app, msg } from "@/lib/data"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-
+import { v4 as uuidv4 } from 'uuid';
 export default function Component() {
     let [sender,SetSender] = useState<string>("");
     let [receiver,SetReceiver] = useState<string>("");
     let [content,SetContent] = useState<string>("");
+    const uuid =uuidv4();
+
     return (
 
 
@@ -40,7 +38,7 @@ export default function Component() {
             <Button 
             onClick={()=>{
                 const db = getDatabase(app);
-                let msg_id = "1234567"
+                let msg_id = uuid;
                 const senderMsgRef = ref(db, `users/${sender}/msgs/${msg_id}`);
                 const msg: msg = {sender: sender,receiver:receiver, content: content,timestamp: Date.now()};
                 set(senderMsgRef,msg);
