@@ -1,39 +1,4 @@
-'use client'
-import Link from "next/link";
-import React, { useContext, useEffect, useState } from 'react';
-
-
-export default function LeftMenu() {
-
-    const users = [
-        { uid: '1', name: 'John Doe' },
-        { uid: '2', name: 'Jane Smith' },
-        { uid: '3', name: 'Bob Johnson' }
-
-    ];
-
-    return (
-        <div className="flex-1 overflow-auto py-2">
-            <nav className="grid items-start px-4 text-sm font-medium">
-                {users.map(user => (
-                    <Link
-                        key={user.uid}
-                        className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-                        href={`/chat/${user.uid}`} 
-                    >
-                        <UserIcon className="h-4 w-4" />
-                        {user.name}
-                    </Link>
-                ))}
-            </nav>
-        </div>
-    );
-
-
-
-}
-
-function PlusIcon(props:any) {
+export function PlusIcon(props: any) {
     return (
         <svg
             {...props}
@@ -54,7 +19,7 @@ function PlusIcon(props:any) {
 }
 
 
-function SearchIcon(props:any) {
+export function SearchIcon(props: any) {
     return (
         <svg
             {...props}
@@ -75,7 +40,7 @@ function SearchIcon(props:any) {
 }
 
 
-function SettingsIcon(props:any) {
+export function SettingsIcon(props: any) {
     return (
         <svg
             {...props}
@@ -96,7 +61,7 @@ function SettingsIcon(props:any) {
 }
 
 
-function UserIcon(props:any) {
+export function UserIcon(props: any) {
     return (
         <svg
             {...props}
@@ -112,6 +77,66 @@ function UserIcon(props:any) {
         >
             <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
+        </svg>
+    )
+}
+
+export function MoonIcon(props: any) {
+    return (
+        <svg
+            {...props}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+        </svg>
+    )
+}
+
+
+export function FlagIcon(props: any) {
+    return (
+        <svg
+            {...props}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+            <line x1="4" x2="4" y1="22" y2="15" />
+        </svg>
+    )
+}
+
+export function EyeIcon(props:any) {
+    return (
+        <svg
+            {...props}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+            <circle cx="12" cy="12" r="3" />
         </svg>
     )
 }

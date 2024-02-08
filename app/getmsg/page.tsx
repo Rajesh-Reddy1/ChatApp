@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import React, { useState, useEffect } from 'react';
 import { getDatabase, ref, get, set, DataSnapshot, onValue } from 'firebase/database';
 import { app } from '@/lib/data';
-import {  PlusIcon, SearchIcon, SettingsIcon, UserIcon } from "../profile/page";
+import {  PlusIcon, SearchIcon, SettingsIcon, UserIcon } from "@/components/leftmenu";
 
 export type Msg = {
     sender: string;
