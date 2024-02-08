@@ -332,7 +332,7 @@ const ChatApp = () => {
                                     <div key={index} className={`flex items-start gap-4 ${message.sender === currentUser ? 'ml-auto' : ''}`}>
                                         {message.sender !== currentUser && <UserIcon className="h-6 w-6" />}
                                         <div className="grid gap-1">
-                                            <p className="text-sm font-medium leading-none text-left">{message.sender}</p>
+                                            <p className="text-sm font-medium leading-none ">{message.sender}</p>
                                             <p className="text-sm text-gray-500 dark:text-gray-400">{message.content}</p>
                                         </div>
                                         {message.sender === currentUser && <UserIcon className="h-6 w-6" />}
