@@ -15,7 +15,6 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { app } from "@/lib/data";
 
-
 function AuthPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
