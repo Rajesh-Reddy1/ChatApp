@@ -1,16 +1,18 @@
 'use client'
+
+
+'use client'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 import Link from "next/link";
-
-
+import { v4 as uuidv4 } from 'uuid';
 
 import React, { useState, useEffect } from 'react';
-import { getDatabase, ref, get } from 'firebase/database';
+import { getDatabase, ref, get, set, DataSnapshot, onValue } from 'firebase/database';
 import { app } from '@/lib/data';
-import { DropdownMenuTrigger, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuContent, DropdownMenu, DropdownMenuLabel } from "@/components/ui/dropdown-menu"
-import { MoonIcon, PlusIcon, SearchIcon, SettingsIcon, UserIcon } from "../profile/page";
+import {  PlusIcon, SearchIcon, SettingsIcon, UserIcon } from "../profile/page";
+
 export type Msg = {
     sender: string;
     receiver: string;
@@ -22,7 +24,8 @@ const ChatApp = () => {
     const [users, setUsers] = useState<string[]>([]);
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const [messages, setMessages] = useState<Msg[]>([]);
-    const currentUser = 'NV'; // Assuming the logged-in user is 'NV'
+    const currentUser = 'Raj'; 
+    const [content, setContent] = useState<string>("");
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -50,29 +53,25 @@ const ChatApp = () => {
             try {
                 if (!selectedUser) return;
                 const db = getDatabase(app);
-                const currentUserMessagesRef = ref(db, `users/${currentUser}/msgs`);
-                const selectedUserMessagesRef = ref(db, `users/${selectedUser}/msgs`);
-
-                const currentUserSnapshot = await get(currentUserMessagesRef);
-                const selectedUserSnapshot = await get(selectedUserMessagesRef);
-
-                const currentUserMessages: Msg[] = currentUserSnapshot.exists() ? Object.values(currentUserSnapshot.val()) : [];
-                const selectedUserMessages: Msg[] = selectedUserSnapshot.exists() ? Object.values(selectedUserSnapshot.val()) : [];
-
-                const filteredMessages = currentUserMessages.concat(selectedUserMessages).filter((message: Msg) =>
-                    (message.sender === currentUser && message.receiver === selectedUser) ||
-                    (message.sender === selectedUser && message.receiver === currentUser)
-                );
-
-                setMessages(filteredMessages);
+                const messagesRef = ref(db, `users/${selectedUser}/msgs`);
+                onValue(messagesRef, (snapshot: DataSnapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        const messagesArray: Msg[] = Object.values(data);
+                        messagesArray.sort((a: Msg, b: Msg) => a.timestamp - b.timestamp);
+                        setMessages(messagesArray);
+                    } else {
+                        setMessages([]);
+                    }
+                });
             } catch (error) {
                 console.error('Error fetching messages:', error);
             }
         };
+        
 
         fetchMessages();
     }, [selectedUser]);
-
 
     return (
         <>
@@ -157,11 +156,46 @@ const ChatApp = () => {
                                 className="w-full bg-white shadow-none appearance-none pl-2 dark:bg-gray-950"
                                 placeholder="Type a message..."
                                 type="text"
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
                             />
-                            <Button>Send</Button>
+                            <Button
+                                onClick={() => {
+                                    if (!selectedUser) {
+                                        console.error('No receiver selected');
+                                        return;
+                                    }
+
+                                    const db = getDatabase(app);
+                                    const msg_id = uuidv4();
+                                    const sender = currentUser; // Assuming currentUser is defined in the component
+                                    const receiver = selectedUser;
+                                    const senderMsgRef = ref(db, `users/${sender}/msgs/${msg_id}`);
+                                    const receiverMsgRef = ref(db, `users/${receiver}/msgs/${msg_id}`);
+                                    const msg: Msg = { sender: sender, receiver: receiver, content: content, timestamp: Date.now() };
+
+                                    set(senderMsgRef, msg)
+                                        .then(() => {
+                                            console.log('Message sent successfully to sender');
+                                            setContent('');
+                                        })
+                                        .catch((error) => {
+                                            console.error('Error sending message to sender:', error);
+                                        });
+
+                                    set(receiverMsgRef, msg)
+                                        .then(() => {
+                                            console.log('Message sent successfully to receiver');
+                                        })
+                                        .catch((error) => {
+                                            console.error('Error sending message to receiver:', error);
+                                        });
+                                }}
+                            >
+                                Send
+                            </Button>
                         </div>
                     </main>
-
                 </div>
             </div>
         </>
