@@ -31,7 +31,7 @@
 
 //   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
 //     e.preventDefault();
-    
+
 //     try {
 //       await createUserWithEmailAndPassword(auth, email, password);
 //       console.log('User signed up successfully!');
@@ -123,17 +123,18 @@ interface SignUpFormProps {
 
 
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { getAuth} from "firebase/auth";
 import { app } from "@/lib/data";
 import { useRouter } from "next/navigation";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 
-export default function LoginPage() {
+export function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const auth = getAuth(app);
     const router = useRouter();
+    const [signupError, setSignupError] = useState(null);
 
     const handleLogin = async () => {
         try {
@@ -141,9 +142,21 @@ export default function LoginPage() {
             const user = userCredential.user;
             // Handle successful login, such as redirecting to another page
             console.log('User logged in successfully!');
-        router.push('/getmsg');
-        } catch (error:any) {
+            router.push('/getmsg');
+        } catch (error: any) {
             setError(error.message);
+        }
+    };
+    const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        try {
+            await createUserWithEmailAndPassword(auth, email, password);
+            console.log('User signed up successfully!');
+        } catch (error: any) {
+            const errorMessage = error.message;
+            console.error('Signup error:', errorMessage);
+            setSignupError(errorMessage);
         }
     };
 
@@ -188,11 +201,144 @@ export default function LoginPage() {
                 </div>
                 <div className="space-y-2 text-center">
                     <p className="text-gray-500 dark:text-gray-400">Don't have an account?</p>
-                    <Link href="#" className="btn btn-outline btn-sm w-full">
-                        Sign Up
-                    </Link>
+
+                    <Button className="w-full">  Sign Up</Button>
                 </div>
             </div>
         </div>
     );
+}
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/ui/tabs"
+import { Anybody } from "next/font/google";
+import firebase from 'firebase/app';
+import { getDatabase, ref, set } from 'firebase/database';
+import { getFirestore, collection, getDoc, doc, setDoc } from 'firebase/firestore';
+export default function Account() {
+
+
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
+
+    const db = getFirestore(app);
+    const auth = getAuth(app)
+
+    const handleSignup = async () => {
+        console.log('User added to Firestore successfully!');
+
+        try {
+            const usersCollection = doc(db, 'users', username);
+            await setDoc(usersCollection, {
+                email,
+                username,
+                password,
+            });
+        } catch (error) {
+            console.error('Error adding user to Firestore:', error);
+        }
+    };
+
+    // Function to create a new user account
+    const handleLogin = async () => {
+        try {
+            const usersCollection = doc(db, 'users', username);
+            const userSnapshot = await getDoc(usersCollection);
+
+            if (userSnapshot.exists()) {
+                const userData = userSnapshot.data();
+
+                if ( userData.password === password) {
+                    console.log('User logged in successfully!');
+                } else {
+                    console.error('Invalid credentials');
+                }
+            } else {
+                console.error('User does not exist');
+            }
+        } catch (error) {
+            console.error('Error logging in user:', error);
+        }
+    };
+
+    // ... rest of the code
+
+    return (
+        <>
+            <div className="flex items-center justify-center min-h-screen">
+
+                <Tabs defaultValue="login" className="w-[400px]">
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="login">Login</TabsTrigger>
+                        <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="login">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Account</CardTitle>
+                                <CardDescription>
+                                    Login to  your existing account.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-2">
+                                <div className="space-y-1">
+                                    <Label htmlFor="name">Username</Label>
+                                    <Input onChange={(e) => { setUsername(e.currentTarget.value) }} id="email" />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label htmlFor="password">Password</Label>
+                                    <Input onChange={(e) => { setPassword(e.currentTarget.value) }} id="Current" type="password" />
+                                </div>
+                            </CardContent>
+                            <CardFooter>
+                                <Button onClick={() => {
+                                    console.log(username, password);
+                                    handleLogin();
+                                }}>Login</Button>
+                            </CardFooter>
+                        </Card>
+                    </TabsContent>
+                    <TabsContent value="signup">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>SignUp</CardTitle>
+                                <CardDescription>
+                                    Create a new account.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-2">
+                                <div className="space-y-1">
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input onChange={(e) => { setEmail(e.currentTarget.value) }} id="mail" type="email" />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label htmlFor="name">Username</Label>
+                                    <Input onChange={(e) => { setUsername(e.currentTarget.value) }} id="Username" />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label htmlFor="new">New password</Label>
+                                    <Input onChange={(e) => { setPassword(e.currentTarget.value) }} id="new" type="password" />
+                                </div>
+                            </CardContent>
+                            <CardFooter>
+                                <Button onClick={() => { handleSignup(); console.log(username, email, password) }}>SignUP</Button>
+                            </CardFooter>
+                        </Card>
+                    </TabsContent>
+                </Tabs>
+            </div>
+        </>
+    )
 }
