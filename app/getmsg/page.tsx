@@ -24,7 +24,7 @@ const ChatApp = () => {
     const [users, setUsers] = useState<string[]>([]);
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const [messages, setMessages] = useState<Msg[]>([]);
-    const currentUser = 'Raj'; 
+    const currentUser = 'Ra'; 
     const [content, setContent] = useState<string>("");
 
     useEffect(() => {
