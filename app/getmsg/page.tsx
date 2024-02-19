@@ -1,7 +1,4 @@
 'use client'
-
-
-'use client'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -24,7 +21,7 @@ const ChatApp = () => {
     const [Users, setUsers] = useState<string[]>([]);
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const [messages, setMessages] = useState<Msg[]>([]);
-    const currentUser = '1'; 
+    const currentUser = '2'; 
     const [content, setContent] = useState<string>("");
 
     useEffect(() => {
@@ -68,7 +65,7 @@ const ChatApp = () => {
                 console.error('Error fetching messages:', error);
             }
         };
-        
+
 
         fetchMessages();
     }, [selectedUser]);
