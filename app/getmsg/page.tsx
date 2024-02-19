@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import React, { useState, useEffect } from 'react';
 import { getDatabase, ref, get, set, DataSnapshot, onValue } from 'firebase/database';
 import { app } from '@/lib/data';
-import {  PlusIcon, SearchIcon, SettingsIcon, UserIcon } from "@/components/leftmenu";
+import { PlusIcon, SearchIcon, SettingsIcon, UserIcon } from "@/components/leftmenu";
 
 export type Msg = {
     sender: string;
@@ -18,10 +18,10 @@ export type Msg = {
 };
 
 const ChatApp = () => {
+    const currentUser = '2';
     const [Users, setUsers] = useState<string[]>([]);
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const [messages, setMessages] = useState<Msg[]>([]);
-    const currentUser = '2'; 
     const [content, setContent] = useState<string>("");
 
     useEffect(() => {
@@ -35,7 +35,7 @@ const ChatApp = () => {
                     setUsers(UsersData);
                 } else {
                     console.log('No Users found.');
-                    setUsers([]); 
+                    setUsers([]);
                 }
             } catch (error) {
                 console.error('Error fetching Users:', error);
@@ -54,8 +54,9 @@ const ChatApp = () => {
                 onValue(messagesRef, (snapshot: DataSnapshot) => {
                     const data = snapshot.val();
                     if (data) {
-                        const messagesArray: Msg[] = Object.values(data);
-                        messagesArray.sort((a: Msg, b: Msg) => a.timestamp - b.timestamp);
+                        let messagesArray: Msg[] = Object.values(data);
+                        // Sort messages by timestamp (from old to new)
+                        messagesArray.sort((a, b) => a.timestamp - b.timestamp);
                         setMessages(messagesArray);
                     } else {
                         setMessages([]);
@@ -65,7 +66,6 @@ const ChatApp = () => {
                 console.error('Error fetching messages:', error);
             }
         };
-
 
         fetchMessages();
     }, [selectedUser]);
