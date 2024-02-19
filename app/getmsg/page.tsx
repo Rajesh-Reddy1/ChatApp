@@ -21,27 +21,27 @@ export type Msg = {
 };
 
 const ChatApp = () => {
-    const [users, setUsers] = useState<string[]>([]);
+    const [Users, setUsers] = useState<string[]>([]);
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const [messages, setMessages] = useState<Msg[]>([]);
-    const currentUser = 'Ra'; 
+    const currentUser = '1'; 
     const [content, setContent] = useState<string>("");
 
     useEffect(() => {
         const fetchUsers = async () => {
             try {
                 const db = getDatabase(app);
-                const usersRef = ref(db, 'users');
-                const snapshot = await get(usersRef);
+                const UsersRef = ref(db, 'Users');
+                const snapshot = await get(UsersRef);
                 if (snapshot.exists()) {
-                    const usersData = Object.keys(snapshot.val()).filter(user => user !== currentUser);
-                    setUsers(usersData);
+                    const UsersData = Object.keys(snapshot.val()).filter(user => user !== currentUser);
+                    setUsers(UsersData);
                 } else {
-                    console.log('No users found.');
-                    setUsers([]);
+                    console.log('No Users found.');
+                    setUsers([]); 
                 }
             } catch (error) {
-                console.error('Error fetching users:', error);
+                console.error('Error fetching Users:', error);
             }
         };
 
@@ -53,7 +53,7 @@ const ChatApp = () => {
             try {
                 if (!selectedUser) return;
                 const db = getDatabase(app);
-                const messagesRef = ref(db, `users/${selectedUser}/msgs`);
+                const messagesRef = ref(db, `Users/${selectedUser}/msgs`);
                 onValue(messagesRef, (snapshot: DataSnapshot) => {
                     const data = snapshot.val();
                     if (data) {
@@ -97,7 +97,7 @@ const ChatApp = () => {
                                     <PlusIcon className="h-4 w-4" />
                                     New Chat
                                 </Link>
-                                {users.map((user, index) => (
+                                {Users.map((user, index) => (
                                     <Link
                                         key={index}
                                         className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
@@ -170,8 +170,8 @@ const ChatApp = () => {
                                     const msg_id = uuidv4();
                                     const sender = currentUser; // Assuming currentUser is defined in the component
                                     const receiver = selectedUser;
-                                    const senderMsgRef = ref(db, `users/${sender}/msgs/${msg_id}`);
-                                    const receiverMsgRef = ref(db, `users/${receiver}/msgs/${msg_id}`);
+                                    const senderMsgRef = ref(db, `Users/${currentUser}/${receiver}/Msgs/${msg_id}`);
+                                    const receiverMsgRef = ref(db, `Users/${receiver}/${currentUser}/Msgs/${msg_id}`);
                                     const msg: Msg = { sender: sender, receiver: receiver, content: content, timestamp: Date.now() };
 
                                     set(senderMsgRef, msg)

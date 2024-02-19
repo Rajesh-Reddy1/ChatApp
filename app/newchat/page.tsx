@@ -1,50 +1,62 @@
-
 'use client'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { getDatabase, ref, set } from "firebase/database"
-import { app, msg } from "@/lib/data"
-import { useState } from "react"
-import { v4 as uuidv4 } from 'uuid';
-export default function Component() {
-    let [sender,SetSender] = useState<string>("");
-    let [receiver,SetReceiver] = useState<string>("");
-    let [content,SetContent] = useState<string>("");
-    const uuid =uuidv4();
+import React, { useEffect, useState } from 'react';
+import { initializeApp } from 'firebase/app';
+import { getDatabase, ref, onValue } from 'firebase/database';
+import { app } from '@/lib/data';
+
+
+
+type Message = {
+    id: string;
+    sender: string;
+    receiver: string;
+    content: string;
+    timestamp: string;
+};
+type UserMessages = {
+    [key: string]: Message[];
+};
+
+const Messages = () => {
+    const currentUser = '1'; // Replace with the current user's ID
+    const [userMessages, setUserMessages] = useState<UserMessages>({});
+
+    useEffect(() => {
+        const db = getDatabase(app);
+        const usersRef = ref(db, `/Users/${currentUser}`);
+        onValue(usersRef, (snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                const loadedUserMessages: UserMessages = {};
+                for (let user in data) {
+                    const userMsgs = [];
+                    for (let id in data[user].Msgs) {
+                        userMsgs.push({ id, ...data[user].Msgs[id] });
+                    }
+                    loadedUserMessages[user] = userMsgs;
+                }
+                setUserMessages(loadedUserMessages);
+            }
+        });
+    }, []);
 
     return (
-
-
-        <div className="mt-auto flex items-center gap-4 w-full">
-            <Input
-                className="w-full bg-white shadow-none appearance-none pl-2 dark:bg-gray-950"
-                placeholder="Type sender..."
-                type="text"
-                onChange={(e)=>{SetSender(e.currentTarget.value)}}
-            />
-            <Input
-                className="w-full bg-white shadow-none appearance-none pl-2 dark:bg-gray-950"
-                placeholder="Type receiver..."
-                type="text"
-                onChange={(e)=>{SetReceiver(e.currentTarget.value)}}
-            />
-            <Input
-                className="w-full bg-white shadow-none appearance-none pl-2 dark:bg-gray-950"
-                placeholder="Type a message..."
-                type="text"
-                onChange={(e)=>{SetContent(e.currentTarget.value)}}
-            />
-            <Button 
-            onClick={()=>{
-                const db = getDatabase(app);
-                let msg_id = uuid;
-                const senderMsgRef = ref(db, `users/${sender}/msgs/${msg_id}`);
-                const msg: msg = {sender: sender,receiver:receiver, content: content,timestamp: Date.now()};
-                set(senderMsgRef,msg);
-            }}
-            >Send</Button>
+        <div>
+            {Object.keys(userMessages).map((user) => (
+                <div key={user}>
+                    <h2>Messages with {user}</h2>
+                    {userMessages[user].map((message) => (
+                        <div key={message.id}>
+                            <p>Content: {message.content}</p>
+                            <p>Receiver: {message.receiver}</p>
+                            <p>Sender: {message.sender}</p>
+                            <p>Timestamp: {message.timestamp}</p>
+                        </div>
+                    ))}
+                </div>
+            ))}
         </div>
+    );
+};
 
-
-    )
-}
+export default Messages;
