@@ -217,7 +217,7 @@ type Message = {
     sender: string;
     receiver: string;
     content: string;
-    timestamp: string;
+    timestamp: number;
 };
 
 type UserMessages = {
@@ -289,7 +289,7 @@ const ChatApp = () => {
             sender: currentUser,
             receiver: selectedUser || '',
             content: content,
-            timestamp: new Date().toISOString(),
+            timestamp: Date.now(),
         };
 
         try {
