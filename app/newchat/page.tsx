@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { getDatabase, ref, get, set, push, onValue } from 'firebase/database';// Import your UserIcon component
-import { PlusIcon, SearchIcon, UserIcon } from '@/components/leftmenu';
+import { PlusIcon, SearchIcon, SettingsIcon, UserIcon } from '@/components/leftmenu';
 import Link from 'next/link';
 import { app } from '@/lib/data';
 import { Button } from '@/components/ui/button';
@@ -111,6 +111,10 @@ const ChatApp = () => {
                                 <UserIcon className="h-6 w-6" />
                                 <span className="">My Profile</span>
                             </Link>
+                            <Button className="ml-auto h-8 w-8" size="icon" variant="outline">
+                                <SettingsIcon className="h-4 w-4" />
+                                <span className="sr-only">Settings</span>
+                            </Button>
                         </div>
                         <div className="flex-1 overflow-auto py-2">
                             <nav className="grid items-start px-4 text-sm font-medium">
@@ -128,7 +132,7 @@ const ChatApp = () => {
                                         href="#"
                                         onClick={() => setSelectedUser(user)}
                                     >
-                                        <UserIcon className="h-6 w-6" />
+                                        <UserIcon className="h-5 w-5" />
                                         <span className="">{user}</span>
                                     </Link>
                                 ))}
@@ -136,27 +140,48 @@ const ChatApp = () => {
 
                         </div>
                     </div>
-                </div>
-                <div className="flex flex-col flex-1 gap-4 p-4 md:gap-8 md:p-6">
-                    <div className="flex items-center">
-                        <h1 className="font-semibold text-lg md:text-2xl">{selectedUser}</h1>
-                    </div>
 
-                    <div className="border shadow-sm rounded-lg">
-                        <div className="flex flex-col gap-4 p-4 overflow-y-auto" style={{ maxHeight: '500px' }}>
-                            {messages && messages.map((message, index) => (
-                                <div key={index} className={`flex items-start gap-4 ${message.sender === currentUser ? 'ml-auto' : ''}`}>
-                                    {message.sender !== currentUser && <UserIcon className="h-6 w-6" />}
-                                    <div className="grid gap-1">
-                                        <p className="text-sm font-medium leading-none ">{message.sender}</p>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">{message.content}</p>
-                                    </div>
-                                    {message.sender === currentUser && <UserIcon className="h-6 w-6" />}
+                </div>
+
+                <div className="flex flex-col flex-1 ">
+                    <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
+                        <Link className="lg:hidden" href="#">
+                            <UserIcon className="h-6 w-6" />
+                            <span className="sr-only">Home</span>
+                        </Link>
+                        <div className="w-full flex-1">
+                            <form>
+                                <div className="relative">
+                                    <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+                                    <Input
+                                        className="w-full bg-white shadow-none appearance-none pl-8 md:w-2/3 lg:w-1/3 dark:bg-gray-950"
+                                        placeholder="Search messages..."
+                                        type="search"
+                                    />
                                 </div>
-                            ))}
+                            </form>
                         </div>
-                    </div>
+
+                    </header>
+
                     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+                    <div className="flex items-center">
+                        <h1 className="font-semibold text-lg md:text-2xl">Chat With {selectedUser}</h1>
+                    </div>
+                        <div className="border shadow-sm rounded-lg">
+                            <div className="flex flex-col gap-4 p-6 overflow-y-auto" style={{ maxHeight: '720px' }}>
+                                {messages && messages.map((message, index) => (
+                                    <div key={index} className={`flex items-start gap-4 ${message.sender === currentUser ? 'ml-auto' : ''}`}>
+                                        {message.sender !== currentUser && <UserIcon className="h-6 w-6" />}
+                                        <div className="grid gap-1">
+                                            <p className="text-sm font-medium leading-none ">{message.sender}</p>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">{message.content}</p>
+                                        </div>
+                                        {message.sender === currentUser && <UserIcon className="h-6 w-6" />}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                         <div className="mt-auto flex items-center gap-4 w-full">
                             <Input
                                 className="flex-1 bg-white shadow-none appearance-none pl-2 dark:bg-gray-950"
@@ -175,10 +200,14 @@ const ChatApp = () => {
                             </Button>
                         </div>
                     </main>
+
                 </div>
+
             </div>
+
         </>
     );
+
 };
 
 export default ChatApp;
