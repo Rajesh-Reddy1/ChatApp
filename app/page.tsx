@@ -1,5 +1,5 @@
 'use client'
-import { useState } from "react";
+import { useState ,useContext} from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -8,13 +8,6 @@ import { EyeIcon, FlagIcon } from "@/components/leftmenu";
 
 type ToggleFormFunction = () => void;
 
-interface LoginFormProps {
-    toggleForm: ToggleFormFunction;
-}
-
-interface SignUpFormProps {
-    toggleForm: ToggleFormFunction;
-}
 
 
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -117,19 +110,21 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs"
-import { Anybody } from "next/font/google";
-import firebase from 'firebase/app';
-import { getDatabase, ref, set } from 'firebase/database';
-import { getFirestore, collection, getDoc, doc, setDoc } from 'firebase/firestore';
+
+
+import { getFirestore, getDoc, doc, setDoc } from 'firebase/firestore';
+
+
+
+
+
 export default function Account() {
-
-
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
+    const [currentUser, setCurrentUser] = useState<string | null>(null);
 
     const db = getFirestore(app);
-    const auth = getAuth(app)
 
     const handleSignup = async () => {
         console.log('User added to Firestore successfully!');
@@ -153,7 +148,9 @@ export default function Account() {
             const userSnapshot = await getDoc(usersCollection);
 
             if (userSnapshot.exists()) {
+                alert(`Welcome back ${userSnapshot.data().username}`);
                 const userData = userSnapshot.data();
+
 
                 if ( userData.password === password) {
                     console.log('User logged in successfully!');
@@ -167,8 +164,7 @@ export default function Account() {
             console.error('Error logging in user:', error);
         }
     };
-
-    // ... rest of the code
+    
 
     return (
         <>

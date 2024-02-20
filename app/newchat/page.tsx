@@ -166,7 +166,7 @@ const ChatApp = () => {
 
                     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
                     <div className="flex items-center">
-                        <h1 className="font-semibold text-lg md:text-2xl">Chat With {selectedUser}</h1>
+                        <h1 className="font-semibold text-lg md:text-2xl">Chats With {selectedUser}</h1>
                     </div>
                         <div className="border shadow-sm rounded-lg">
                             <div className="flex flex-col gap-4 p-6 overflow-y-auto" style={{ maxHeight: '720px' }}>
