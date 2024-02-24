@@ -20,6 +20,7 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs"
+import { routeModule } from "next/dist/build/templates/app-page";
 
 export default function Account() {
     const [username, setUsername] = useState('');

@@ -26,6 +26,7 @@ const ChatApp = () => {
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const [userMessages, setUserMessages] = useState<UserMessages>({});
     const [content, setContent] = useState<string>("");
+    const messages = userMessages[selectedUser || ''];
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -99,7 +100,6 @@ const ChatApp = () => {
         }
     };
 
-    const messages = userMessages[selectedUser || ''];
 
     return (
         <>
