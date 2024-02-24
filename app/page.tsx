@@ -1,101 +1,11 @@
 'use client'
-import { useState ,useContext} from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { Label } from "@/components/ui/label";
-import { EyeIcon, FlagIcon } from "@/components/leftmenu";
-
-type ToggleFormFunction = () => void;
-
-
-
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, getDoc, doc, setDoc } from 'firebase/firestore';
 import { app } from "@/lib/data";
-import { useRouter } from "next/navigation";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
-
-export function LoginPage() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const auth = getAuth(app);
-    const router = useRouter();
-    const [signupError, setSignupError] = useState(null);
-
-    const handleLogin = async () => {
-        try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-            // Handle successful login, such as redirecting to another page
-            console.log('User logged in successfully!');
-            router.push('/getmsg');
-        } catch (error: any) {
-            setError(error.message);
-        }
-    };
-    const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            console.log('User signed up successfully!');
-        } catch (error: any) {
-            const errorMessage = error.message;
-            console.error('Signup error:', errorMessage);
-            setSignupError(errorMessage);
-        }
-    };
-
-    return (
-        <div className="flex items-center justify-center min-h-screen">
-            <div className="w-full max-w-sm p-4 space-y-4 bg-gray-100 rounded-lg shadow-md">
-                <div className="mx-auto flex items-center rounded-lg bg-gradient-to-tr from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 p-3">
-                    <FlagIcon className="h-6 w-6 text-primary-500" />
-                </div>
-                <div className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="username">Username</Label>
-                        <Input
-                            id="username"
-                            placeholder="Username"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <div className="relative">
-                            <Label htmlFor="password">Password</Label>
-                            <Input
-                                id="password"
-                                placeholder="Password"
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                            <EyeIcon className="absolute right-3 top-3 text-gray-500 dark:text-gray-400" />
-                        </div>
-                    </div>
-                    <Button className="w-full" onClick={handleLogin}>
-                        Login
-                    </Button>
-                    {error && <p className="text-red-500">{error}</p>}
-                    <Link href="#" className="block text-center text-sm underline">
-                        Forgot Password?
-                    </Link>
-                </div>
-                <div className="space-y-2 text-center">
-                    <p className="text-gray-500 dark:text-gray-400">Don't have an account?</p>
-
-                    <Button className="w-full">  Sign Up</Button>
-                </div>
-            </div>
-        </div>
-    );
-}
 import {
     Card,
     CardContent,
@@ -111,13 +21,6 @@ import {
     TabsTrigger,
 } from "@/components/ui/tabs"
 
-
-import { getFirestore, getDoc, doc, setDoc } from 'firebase/firestore';
-
-
-
-
-
 export default function Account() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -126,22 +29,42 @@ export default function Account() {
 
     const db = getFirestore(app);
 
+    const validateEmail = (email:any) => {
+        const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    }
+
     const handleSignup = async () => {
-        console.log('User added to Firestore successfully!');
+        if (password.length < 8) {
+            alert('Password should be at least 8 characters');
+            return;
+        }
+
+        if (!validateEmail(email)) {
+            alert('Invalid email format');
+            return;
+        }
 
         try {
             const usersCollection = doc(db, 'users', username);
+            const userSnapshot = await getDoc(usersCollection);
+
+            if (userSnapshot.exists()) {
+                alert('Username already exists');
+                return;
+            }
+
             await setDoc(usersCollection, {
                 email,
                 username,
                 password,
             });
+
+            console.log('User added to Firestore successfully!');
         } catch (error) {
             console.error('Error adding user to Firestore:', error);
         }
     };
-
-    // Function to create a new user account
     const handleLogin = async () => {
         try {
             const usersCollection = doc(db, 'users', username);
@@ -164,7 +87,6 @@ export default function Account() {
             alert('Error logging in user:');
         }
     };
-    
 
     return (
         <>
@@ -186,7 +108,7 @@ export default function Account() {
                             <CardContent className="space-y-2">
                                 <div className="space-y-1">
                                     <Label htmlFor="name">Username</Label>
-                                    <Input onChange={(e) => { setUsername(e.currentTarget.value) }} id="email" />
+                                    <Input onChange={(e) => { setUsername(e.currentTarget.value) }} id="email"  />
                                 </div>
                                 <div className="space-y-1">
                                     <Label htmlFor="password">Password</Label>
@@ -232,4 +154,5 @@ export default function Account() {
             </div>
         </>
     )
-}
+
+};
