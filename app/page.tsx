@@ -148,20 +148,20 @@ export default function Account() {
             const userSnapshot = await getDoc(usersCollection);
 
             if (userSnapshot.exists()) {
-                alert(`Welcome back ${userSnapshot.data().username}`);
                 const userData = userSnapshot.data();
 
 
                 if ( userData.password === password) {
                     console.log('User logged in successfully!');
+                    alert("You're now logged in!");
                 } else {
-                    console.error('Invalid credentials');
+                    alert( "Wrong Password" );
                 }
             } else {
-                console.error('User does not exist');
+                alert('User does not exist');
             }
         } catch (error) {
-            console.error('Error logging in user:', error);
+            alert('Error logging in user:');
         }
     };
     
