@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { getDatabase, ref, get, set, DataSnapshot, onValue } from 'firebase/database';
 import { app } from '@/lib/data';
 import { PlusIcon, SearchIcon, SettingsIcon, UserIcon } from "@/components/leftmenu";
+import { useApp } from "@/components/Messageprovider";
 
 export type Msg = {
     sender: string;
@@ -18,7 +19,7 @@ export type Msg = {
 };
 
 const ChatApp = () => {
-    const currentUser = '2';
+    const { currentUser }= useApp();
     const [Users, setUsers] = useState<string[]>([]);
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const [messages, setMessages] = useState<Msg[]>([]);

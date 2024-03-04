@@ -1,10 +1,13 @@
 'use client'
-import { useState } from "react";
+import React, { useState, useEffect } from 'react';
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { getFirestore, getDoc, doc, setDoc } from 'firebase/firestore';
 import { app } from "@/lib/data";
+import {useRouter} from 'next/router';
+
 
 import {
     Card,
@@ -20,17 +23,22 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs"
-import { routeModule } from "next/dist/build/templates/app-page";
+import { useApp } from '@/components/Messageprovider';
+import { redirect } from 'next/navigation';
 
 export default function Account() {
+
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
-    const [currentUser, setCurrentUser] = useState<string | null>(null);
+    const {currentUser, setcurrentUser} = useApp();
+    const router = useRouter();
+
 
     const db = getFirestore(app);
 
-    const validateEmail = (email:any) => {
+    const validateEmail = (email: any) => {
         const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return re.test(email);
     }
@@ -66,28 +74,31 @@ export default function Account() {
             console.error('Error adding user to Firestore:', error);
         }
     };
+
     const handleLogin = async () => {
         try {
             const usersCollection = doc(db, 'users', username);
             const userSnapshot = await getDoc(usersCollection);
-
             if (userSnapshot.exists()) {
                 const userData = userSnapshot.data();
-
-
-                if ( userData.password === password) {
+                if (userData.password === password) {
                     console.log('User logged in successfully!');
                     alert("You're now logged in!");
+                    setcurrentUser(username);
+                    redirect('/getmsg')
                 } else {
-                    alert( "Wrong Password" );
+                    alert("Wrong Password");
                 }
             } else {
                 alert('User does not exist');
             }
         } catch (error) {
-            alert('Error logging in user:');
+            alert('Error logging in user:'+error);
         }
     };
+    useEffect(() => {
+        handleLogin();
+    }, []);
 
     return (
         <>
@@ -109,7 +120,7 @@ export default function Account() {
                             <CardContent className="space-y-2">
                                 <div className="space-y-1">
                                     <Label htmlFor="name">Username</Label>
-                                    <Input onChange={(e) => { setUsername(e.currentTarget.value) }} id="email"  />
+                                    <Input onChange={(e) => { setUsername(e.currentTarget.value) }} id="email" />
                                 </div>
                                 <div className="space-y-1">
                                     <Label htmlFor="password">Password</Label>
@@ -157,3 +168,5 @@ export default function Account() {
     )
 
 };
+
+
