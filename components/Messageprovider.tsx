@@ -1,29 +1,29 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import firebase from 'firebase/app';
-import 'firebase/auth';
+'use client'
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+
 interface AppContextValue {
     currentUser: string;
     setcurrentUser: (currentUser: string) => void;
     messages: string[];
     setMessages: (messages: string[]) => void;
-    children: React.ReactNode; // Add the 'children' property
 }
 
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
+interface AppProviderProps {
+    children: ReactNode;
+}
 
-export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    useEffect(
-        () => {
-            
-        }
-    )
+export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
+    const [currentUser, setCurrentUser] = useState<string>('');
+    const [messages, setMessages] = useState<string[]>([]);
 
-
-    return children as React.ReactElement | null; 
-
+    return (
+        <AppContext.Provider value={{ currentUser, setcurrentUser: setCurrentUser, messages, setMessages }}>
+            {children}
+        </AppContext.Provider>
+    );
 };
-
 
 export const useApp = (): AppContextValue => {
     const context = useContext(AppContext);

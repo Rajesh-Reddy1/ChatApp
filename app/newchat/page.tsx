@@ -8,6 +8,7 @@ import { app } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SendIcon } from 'lucide-react';
+import { useApp } from '@/components/Messageprovider';
 
 type Message = {
     sender: string;
@@ -21,7 +22,7 @@ type UserMessages = {
 };
 
 const ChatApp = () => {
-    const currentUser = '3'; // Replace with the current user's ID
+    const { currentUser }= useApp(); // Replace with the current user's ID
     const [Users, setUsers] = useState<string[]>([]);
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const [userMessages, setUserMessages] = useState<UserMessages>({});

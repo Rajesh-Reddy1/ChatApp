@@ -4,9 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { getFirestore, getDoc, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, getDoc, doc, setDoc, collection } from 'firebase/firestore';
 import { app } from "@/lib/data";
-import {useRouter} from 'next/router';
+import { useRouter } from 'next/navigation'
+
+
 
 
 import {
@@ -32,8 +34,8 @@ export default function Account() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
-    const {currentUser, setcurrentUser} = useApp();
-    const router = useRouter();
+    const { currentUser, setcurrentUser } = useApp();
+    const router = useRouter()
 
 
     const db = getFirestore(app);
@@ -43,6 +45,62 @@ export default function Account() {
         return re.test(email);
     }
 
+    // const handleSignup = async () => {
+    //     if (password.length < 8) {
+    //         alert('Password should be at least 8 characters');
+    //         return;
+    //     }
+
+    //     if (!validateEmail(email)) {
+    //         alert('Invalid email format');
+    //         return;
+    //     }
+
+    //     try {
+    //         const usersCollection = doc(db, 'Users', username);
+    //         const userSnapshot = await getDoc(usersCollection);
+
+    //         if (userSnapshot.exists()) {
+    //             alert('Username already exists');
+    //             return;
+    //         }
+
+    //         await setDoc(usersCollection, {
+    //             email,
+    //             username,
+    //             password,
+    //         });
+
+    //         console.log('User added to Firestore successfully!');
+    //     } catch (error) {
+    //         console.error('Error adding user to Firestore:', error);
+    //     }
+    // };
+
+    // const handleLogin = async () => {
+    //     try {
+    //         const usersCollection = doc(db, 'Users', username);
+    //         const userSnapshot = await getDoc(usersCollection);
+    //         if (userSnapshot.exists()) {
+    //             const userData = userSnapshot.data();
+    //             if (userData.password === password) {
+    //                 console.log('User logged in successfully!');
+    //                 alert("You're now logged in!");
+    //                 setcurrentUser(username);
+    //                 // /redirect('/getmsg')
+    //             } else {
+    //                 alert("Wrong Password");
+    //             }
+    //         } else {
+    //             alert('User does not exist');
+    //         }
+    //     } catch (error) {
+    //         alert('Error logging in user:'+error);
+    //     }
+    // };
+    // useEffect(() => {
+    //     handleLogin();
+    // }, []);
     const handleSignup = async () => {
         if (password.length < 8) {
             alert('Password should be at least 8 characters');
@@ -55,15 +113,14 @@ export default function Account() {
         }
 
         try {
-            const usersCollection = doc(db, 'users', username);
-            const userSnapshot = await getDoc(usersCollection);
-
+            const usersCollection = collection(db, 'users'); // Collection reference
+            const userSnapshot = await getDoc(doc(usersCollection, username)); // Document reference with username
             if (userSnapshot.exists()) {
                 alert('Username already exists');
                 return;
             }
 
-            await setDoc(usersCollection, {
+            await setDoc(doc(usersCollection, username), { // Setting document with username
                 email,
                 username,
                 password,
@@ -77,15 +134,17 @@ export default function Account() {
 
     const handleLogin = async () => {
         try {
-            const usersCollection = doc(db, 'users', username);
-            const userSnapshot = await getDoc(usersCollection);
+            const usersCollection = collection(db, 'users'); // Collection reference
+            const userSnapshot = await getDoc(doc(usersCollection, username)); // Document reference with username
             if (userSnapshot.exists()) {
                 const userData = userSnapshot.data();
                 if (userData.password === password) {
                     console.log('User logged in successfully!');
                     alert("You're now logged in!");
                     setcurrentUser(username);
-                    redirect('/getmsg')
+                    router.push("/newchat")
+
+
                 } else {
                     alert("Wrong Password");
                 }
@@ -93,12 +152,15 @@ export default function Account() {
                 alert('User does not exist');
             }
         } catch (error) {
-            alert('Error logging in user:'+error);
+            alert('Error logging in user:' + error);
         }
     };
-    useEffect(() => {
-        handleLogin();
-    }, []);
+
+
+    const handleSubmit = (event: any) => {
+        event.preventDefault(); // Prevent page refresh
+        handleLogin(); // Call login function
+    };
 
     return (
         <>
